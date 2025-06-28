@@ -36,65 +36,42 @@ class NotificationMCPServer {
       return {
         tools: [
           {
-            name: 'send_notification',
-            description: 'Send a desktop notification with customizable sound for different use cases',
+            name: 'send_user_action_needed_notification',
+            description: 'Send a notification only when user action or decision is required - use sparingly for important interactions',
             inputSchema: {
               type: 'object',
               properties: {
-                title: {
+                action_needed: {
                   type: 'string',
-                  description: 'The notification title',
-                  maxLength: 100
+                  description: 'What action the user needs to take',
+                  maxLength: 200
                 },
-                message: {
+                context: {
                   type: 'string',
-                  description: 'The notification message content',
-                  maxLength: 500
+                  description: 'Context or reason why user action is needed',
+                  maxLength: 300
                 },
-                sound: {
+                urgency: {
                   type: 'string',
-                  enum: ['success', 'info', 'warning', 'error', 'progress', 'reminder', 'default', 'silent'],
-                  description: 'Sound type for the notification context: success (task completion), info (status updates), warning (attention needed), error (failures), progress (ongoing work), reminder (prompts), default (system sound), silent (no sound)',
-                  default: 'default'
-                },
-                subtitle: {
-                  type: 'string',
-                  description: 'Optional subtitle for the notification',
-                  maxLength: 100
+                  enum: ['low', 'medium', 'high', 'critical'],
+                  description: 'Urgency level of the required action',
+                  default: 'medium'
                 },
                 timeout: {
                   type: 'number',
-                  description: 'Timeout in seconds (macOS only)',
-                  minimum: 1,
+                  description: 'How long to display the notification (seconds)',
+                  minimum: 5,
                   maximum: 60,
-                  default: 5
-                },
-                open: {
-                  type: 'string',
-                  description: 'URL or file path to open when notification is clicked',
-                },
-                wait: {
-                  type: 'boolean',
-                  description: 'Whether to wait for user interaction',
-                  default: false
+                  default: 10
                 }
               },
-              required: ['title', 'message'],
-              additionalProperties: false
-            }
-          },
-          {
-            name: 'list_notification_sounds',
-            description: 'List available notification sounds and their intended use cases',
-            inputSchema: {
-              type: 'object',
-              properties: {},
+              required: ['action_needed'],
               additionalProperties: false
             }
           },
           {
             name: 'send_task_complete_notification',
-            description: 'Send a task completion notification with success sound',
+            description: 'Send a task completion notification with success sound - for significant completed work',
             inputSchema: {
               type: 'object',
               properties: {
@@ -115,7 +92,7 @@ class NotificationMCPServer {
           },
           {
             name: 'send_error_notification',
-            description: 'Send an error notification with error sound',
+            description: 'Send an error notification with error sound - for errors requiring user attention',
             inputSchema: {
               type: 'object',
               properties: {
@@ -135,23 +112,43 @@ class NotificationMCPServer {
             }
           },
           {
-            name: 'send_progress_notification',
-            description: 'Send a progress update notification with progress sound',
+            name: 'auto_notify_if_appropriate',
+            description: 'Automatically determine if a notification should be sent based on current context - for intelligent notification management',
             inputSchema: {
               type: 'object',
               properties: {
-                status: {
+                context: {
                   type: 'string',
-                  description: 'Current progress status',
-                  maxLength: 200
+                  description: 'Current context or situation that might require notification',
+                  maxLength: 500
                 },
-                details: {
+                todos_completed: {
+                  type: 'boolean',
+                  description: 'Whether all planned todos are completed',
+                  default: false
+                },
+                error_occurred: {
+                  type: 'boolean', 
+                  description: 'Whether an error has occurred',
+                  default: false
+                },
+                permission_required: {
+                  type: 'boolean',
+                  description: 'Whether user permission is required for an action',
+                  default: false
+                },
+                error_details: {
                   type: 'string',
-                  description: 'Optional progress details',
+                  description: 'Details about the error if error_occurred is true',
+                  maxLength: 300
+                },
+                permission_details: {
+                  type: 'string', 
+                  description: 'Details about the permission required if permission_required is true',
                   maxLength: 300
                 }
               },
-              required: ['status'],
+              required: ['context'],
               additionalProperties: false
             }
           }
@@ -164,11 +161,8 @@ class NotificationMCPServer {
 
       try {
         switch (name) {
-          case 'send_notification':
-            return await this.handleSendNotification(args as any);
-
-          case 'list_notification_sounds':
-            return this.handleListSounds();
+          case 'send_user_action_needed_notification':
+            return await this.handleUserActionNeededNotification(args as any);
 
           case 'send_task_complete_notification':
             return await this.handleTaskCompleteNotification(args as any);
@@ -176,8 +170,8 @@ class NotificationMCPServer {
           case 'send_error_notification':
             return await this.handleErrorNotification(args as any);
 
-          case 'send_progress_notification':
-            return await this.handleProgressNotification(args as any);
+          case 'auto_notify_if_appropriate':
+            return await this.handleAutoNotification(args as any);
 
           default:
             throw new Error(`Unknown tool: ${name}`);
@@ -197,36 +191,6 @@ class NotificationMCPServer {
     });
   }
 
-  private async handleSendNotification(options: NotificationOptions) {
-    const result = await this.notificationManager.sendNotification(options);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: result.success 
-            ? `✅ Notification sent: "${options.title}" with ${options.sound || 'default'} sound`
-            : `❌ Failed to send notification: ${result.error}`
-        }
-      ]
-    };
-  }
-
-  private handleListSounds() {
-    const sounds = this.notificationManager.getAvailableSounds();
-    const soundList = sounds.map(sound => 
-      `• **${sound}**: ${this.notificationManager.getSoundDescription(sound)}`
-    ).join('\n');
-
-    return {
-      content: [
-        {
-          type: 'text',
-          text: `## Available Notification Sounds\n\n${soundList}`
-        }
-      ]
-    };
-  }
 
   private async handleTaskCompleteNotification(args: { task: string; details?: string }) {
     const options: NotificationOptions = {
@@ -272,12 +236,36 @@ class NotificationMCPServer {
     };
   }
 
-  private async handleProgressNotification(args: { status: string; details?: string }) {
+
+  private async handleUserActionNeededNotification(args: { 
+    action_needed: string; 
+    context?: string; 
+    urgency?: 'low' | 'medium' | 'high' | 'critical';
+    timeout?: number;
+  }) {
+    const urgencyEmojis = {
+      low: '💭',
+      medium: '🔔',
+      high: '⚠️',
+      critical: '🚨'
+    };
+
+    const urgencySounds = {
+      low: 'default' as NotificationSound,
+      medium: 'reminder' as NotificationSound,
+      high: 'warning' as NotificationSound,
+      critical: 'error' as NotificationSound
+    };
+
+    const urgency = args.urgency || 'medium';
+    
     const options: NotificationOptions = {
-      title: '⏳ Progress Update',
-      message: args.status,
-      subtitle: args.details,
-      sound: 'progress' as NotificationSound
+      title: `${urgencyEmojis[urgency]} Action Required`,
+      message: args.action_needed,
+      subtitle: args.context,
+      sound: urgencySounds[urgency],
+      timeout: args.timeout || 10,
+      wait: urgency === 'critical' || urgency === 'high'
     };
 
     const result = await this.notificationManager.sendNotification(options);
@@ -287,8 +275,52 @@ class NotificationMCPServer {
         {
           type: 'text',
           text: result.success 
-            ? `⏳ Progress notification sent: "${args.status}"`
-            : `❌ Failed to send progress notification: ${result.error}`
+            ? `${urgencyEmojis[urgency]} User action notification sent: "${args.action_needed}" (${urgency} priority)`
+            : `❌ Failed to send user action notification: ${result.error}`
+        }
+      ]
+    };
+  }
+
+  private async handleAutoNotification(args: {
+    context: string;
+    todos_completed?: boolean;
+    error_occurred?: boolean;
+    permission_required?: boolean;
+    error_details?: string;
+    permission_details?: string;
+  }) {
+    // Priority: Error > Permission > TODO completion
+    
+    if (args.error_occurred) {
+      return await this.handleErrorNotification({
+        error: args.error_details || 'An error occurred',
+        details: args.context
+      });
+    }
+    
+    if (args.permission_required) {
+      return await this.handleUserActionNeededNotification({
+        action_needed: args.permission_details || 'Permission required for action',
+        context: args.context,
+        urgency: 'high' as const
+      });
+    }
+    
+    if (args.todos_completed) {
+      return await this.handleUserActionNeededNotification({
+        action_needed: '全タスク完了 - 次の指示をお待ちしています',
+        context: args.context,
+        urgency: 'medium' as const
+      });
+    }
+    
+    // No notification needed
+    return {
+      content: [
+        {
+          type: 'text',
+          text: '💭 No notification needed for current context'
         }
       ]
     };
