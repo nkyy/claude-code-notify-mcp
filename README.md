@@ -1,32 +1,33 @@
-# Claude Code Notification MCP Server
+# 🔔 Claude Code Notification MCP Server
 
 A Model Context Protocol (MCP) server that enables Claude Code to send desktop notifications with contextual sounds for different types of events.
 
-## Features
+## ✨ Features
 
-- 🔔 **Desktop Notifications**: Native macOS notifications using `osascript` with cross-platform fallback
-- 🎵 **Contextual Sounds**: Different sounds for different notification types (success, error, warning, etc.)
-- 🚀 **Multiple Notification Types**: Pre-built notification types for common Claude Code use cases
-- ⚙️ **Flexible Configuration**: Customizable titles, messages, sounds, and behaviors
-- 🖱️ **Interactive**: Support for click actions and waiting for user interaction
+- 🔔 **Desktop Notifications**: Native notifications for macOS/Windows/Linux
+- 🎵 **Contextual Sounds**: Different sounds for success, error, warning, and other event types
+- 🚀 **Easy Setup**: One-command installation and configuration
+- 📋 **Pre-built Notification Types**: Common notification patterns for quick use
+- 🖱️ **Interactive**: Support for click actions and user interaction
 
-## Installation
+## 🚀 Quick Start
+
+### 1. Installation
 
 ```bash
-npm install
-npm run build
+git clone <this-repository>
+cd ccnotify
+npm install && npm run build
 ```
 
-## Usage
+### 2. Configure Claude Code
 
-### As MCP Server
-
-Add to your Claude Code MCP configuration:
+Add to your Claude Code settings file (`~/.config/claude-code/settings.json`):
 
 ```json
 {
   "mcpServers": {
-    "claude-code-notify": {
+    "ccnotify": {
       "command": "node",
       "args": ["/path/to/ccnotify/dist/index.js"]
     }
@@ -34,127 +35,194 @@ Add to your Claude Code MCP configuration:
 }
 ```
 
-### Available Tools
+### 3. Test It Out
 
-#### 1. `send_notification`
-Send a custom notification with full control over all parameters.
+Ask Claude Code:
 
-**Parameters:**
-- `title` (required): Notification title
-- `message` (required): Notification message  
-- `sound` (optional): Sound type - see Available Sounds below
-- `subtitle` (optional): Additional subtitle text
-- `timeout` (optional): Timeout in seconds (1-60)
-- `open` (optional): URL/file to open when clicked
-- `wait` (optional): Wait for user interaction
+```
+Send me a test notification
+```
 
-#### 2. `send_task_complete_notification`
-Quick notification for task completion with success sound.
+If you see a notification, you're all set! 🎉
 
-**Parameters:**
-- `task` (required): Description of completed task
-- `details` (optional): Additional completion details
+## 📱 Basic Usage
 
-#### 3. `send_error_notification`  
-Quick notification for errors with error sound.
-
-**Parameters:**
-- `error` (required): Error description
-- `details` (optional): Additional error details
-
-#### 4. `send_progress_notification`
-Quick notification for progress updates with progress sound.
-
-**Parameters:**
-- `status` (required): Current progress status
-- `details` (optional): Additional progress details
-
-#### 5. `list_notification_sounds`
-List all available sounds and their intended use cases.
-
-## Available Sounds
-
-- **`success`**: Task completion, successful operations (Glass sound)
-- **`info`**: Information, status updates (Blow sound)  
-- **`warning`**: Warnings, attention needed (Sosumi sound)
-- **`error`**: Errors, failures (Basso sound)
-- **`progress`**: Progress updates, ongoing work (Tink sound)
-- **`reminder`**: Reminders, prompts (Ping sound)
-- **`default`**: Default system notification sound
-- **`silent`**: No sound
-
-## Common Use Cases
-
-### Task Completion
-```typescript
-// When Claude Code finishes a long-running task
-send_task_complete_notification({
-  task: "Code refactoring completed successfully",
-  details: "Processed 15 files, fixed 23 issues"
-})
+### Task Completion Notifications
+```
+Notify me when the build finishes
 ```
 
 ### Error Alerts
-```typescript
-// When Claude Code encounters an error
-send_error_notification({
-  error: "Build failed with TypeScript errors",
-  details: "3 type errors found in user-service.ts"
-})
+```
+Alert me if there are any compilation errors
 ```
 
 ### Progress Updates
+```
+Show progress notifications during package installation
+```
+
+## 🎵 Available Sounds
+
+| Sound | Use Case | macOS Sound |
+|-------|----------|-------------|
+| `success` | Task completion, success | Glass |
+| `error` | Errors, failures | Basso |
+| `warning` | Warnings, attention needed | Sosumi |
+| `info` | Information, status updates | Blow |
+| `progress` | Progress updates, ongoing work | Tink |
+| `reminder` | Reminders, prompts | Ping |
+| `default` | System default notification sound | - |
+| `silent` | No sound | - |
+
+## 🛠️ Advanced Usage
+
+### Custom Notifications
+
 ```typescript
-// During long operations
+// Available tool in Claude Code
+send_notification({
+  title: "🔍 Code Analysis Complete",
+  message: "Found 3 potential improvements",
+  sound: "info",
+  subtitle: "Click to view recommendations",
+  open: "file:///path/to/report.html"
+})
+```
+
+### Pre-built Notification Types
+
+```typescript
+// Task completion notification
+send_task_complete_notification({
+  task: "Refactoring completed successfully",
+  details: "Processed 15 files, fixed 23 issues"
+})
+
+// Error notification
+send_error_notification({
+  error: "TypeScript compilation failed",
+  details: "3 type errors found in user-service.ts"
+})
+
+// Progress notification
 send_progress_notification({
   status: "Installing dependencies (2/5)",
   details: "Installing @types/node..."
 })
 ```
 
-### Custom Notifications
+## 🌍 Real-World Examples
+
+### Development Workflow
+
+**Long-running Tasks**
+```
+"Running test suite... please notify when complete"
+→ ✅ "Tests Complete: All 127 tests passed"
+```
+
+**Error Monitoring**
+```
+"Let me know if the build fails"
+→ 🚨 "Build Error: Type definitions not found"
+```
+
+**Progress Tracking**
+```
+"Show progress while downloading large files"
+→ 📊 "Download Progress: 67% (340MB/500MB)"
+```
+
+### Custom Use Cases
+
+**Meeting Reminders**
 ```typescript
-// For specific scenarios
 send_notification({
-  title: "🔍 Code Analysis Complete",
-  message: "Found 3 potential improvements",
-  sound: "info",
-  subtitle: "Click to view recommendations",
-  open: "file:///path/to/analysis-report.html"
+  title: "📅 Meeting in 5 minutes",
+  message: "Daily standup meeting starting soon",
+  sound: "reminder",
+  wait: true
 })
 ```
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Development mode with auto-reload
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
+**Code Review Completion**
+```typescript
+send_task_complete_notification({
+  task: "Pull Request #123 reviewed",
+  details: "Approved - ready to merge"
+})
 ```
 
-## Platform Support
+**CI/CD Pipeline Updates**
+```typescript
+send_progress_notification({
+  status: "Deployment in progress",
+  details: "Stage 2/4: Running integration tests"
+})
+```
 
+## 🔧 Development
+
+### Development Commands
+```bash
+npm run dev    # Development mode with auto-reload
+npm run build  # Production build
+npm start      # Start production server
+```
+
+### Platform Support
 - **macOS**: Full native support with `osascript` and system sounds
 - **Windows/Linux**: Cross-platform support via `node-notifier` package
 
-## Architecture
+### Architecture
+- Type-safe TypeScript implementation
+- MCP (Model Context Protocol) compliant
+- Automatic platform-specific implementation switching
+- Extensible notification type system
 
-The MCP server follows the Playwright MCP pattern with:
+## 📋 Available Tools
 
-- **Type-safe interfaces** for all notification options
-- **Modular notification manager** with platform-specific implementations  
-- **Clean MCP tool definitions** with proper input validation
-- **Error handling** with meaningful error messages
-- **Extensible design** for adding new notification types
+### 1. `send_notification`
+Send a custom notification with full control over all parameters.
 
-## License
+**Parameters:**
+- `title` (required): Notification title
+- `message` (required): Notification message
+- `sound` (optional): Sound type - see Available Sounds
+- `subtitle` (optional): Additional subtitle text
+- `timeout` (optional): Timeout in seconds (1-60, macOS only)
+- `open` (optional): URL/file to open when clicked
+- `wait` (optional): Wait for user interaction
 
-MIT
+### 2. `send_task_complete_notification`
+Quick notification for task completion with success sound.
+
+**Parameters:**
+- `task` (required): Description of completed task
+- `details` (optional): Additional completion details
+
+### 3. `send_error_notification`
+Quick notification for errors with error sound.
+
+**Parameters:**
+- `error` (required): Error description
+- `details` (optional): Additional error details
+
+### 4. `send_progress_notification`
+Quick notification for progress updates with progress sound.
+
+**Parameters:**
+- `status` (required): Current progress status
+- `details` (optional): Additional progress details
+
+### 5. `list_notification_sounds`
+List all available sounds and their intended use cases.
+
+## 🤝 Contributing
+
+Bug reports and feature requests are welcome! Please open an [issue](../../issues).
+
+## 📄 License
+
+MIT License

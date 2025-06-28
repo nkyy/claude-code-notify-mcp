@@ -16,8 +16,16 @@
     "claude-code",
     "alerts"
   ],
-  "author": "Claude Code User",
+  "author": "nkyy <nkyygitt@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nkyy/claude-code-notify-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nkyy/claude-code-notify-mcp/issues"
+  },
+  "homepage": "https://github.com/nkyy/claude-code-notify-mcp#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "node-notifier": "^10.0.1"
