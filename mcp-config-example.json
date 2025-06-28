@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "claude-code-notify": {
+      "command": "node",
+      "args": ["/Users/nkygit/vscode-work/ccnotify/dist/index.js"],
+      "env": {}
+    }
+  }
+}

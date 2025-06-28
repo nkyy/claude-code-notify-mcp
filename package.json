@@ -1,0 +1,38 @@
+{
+  "name": "claude-code-notify-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for sending notifications from Claude Code with customizable sounds",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "watch": "tsx watch src/index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "notifications",
+    "claude-code",
+    "alerts"
+  ],
+  "author": "Claude Code User",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "node-notifier": "^10.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/node-notifier": "^8.0.5",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "bin": {
+    "claude-code-notify-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist/**/*",
+    "sounds/**/*"
+  ]
+}
