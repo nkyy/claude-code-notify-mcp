@@ -37,7 +37,7 @@ class NotificationMCPServer {
         tools: [
           {
             name: 'send_user_action_needed_notification',
-            description: 'Send a notification only when user action or decision is required - use sparingly for important interactions',
+            description: 'AUTOMATICALLY send urgent notifications when user input, decision, or immediate attention is required. Claude should proactively use this for: file conflicts, permission requests, critical errors requiring user choice, or when waiting for user response before proceeding. Essential for good UX - notify users immediately when blocked.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -71,7 +71,7 @@ class NotificationMCPServer {
           },
           {
             name: 'send_task_complete_notification',
-            description: 'Send a task completion notification with success sound - for significant completed work',
+            description: 'AUTOMATICALLY send success notifications when any significant task completes successfully. Claude should proactively use this for: builds finishing, tests passing, file operations completing, refactoring done, analysis complete, long operations finishing. Always notify users of completion for better UX.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -92,7 +92,7 @@ class NotificationMCPServer {
           },
           {
             name: 'send_error_notification',
-            description: 'Send an error notification with error sound - for errors requiring user attention',
+            description: 'AUTOMATICALLY send error notifications with error sound when anything fails. Claude must proactively use this when: compilation fails, tests fail, file operations fail, network requests fail, validation errors occur, bash commands fail. Critical for error awareness - always notify on failures.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -113,7 +113,7 @@ class NotificationMCPServer {
           },
           {
             name: 'auto_notify_if_appropriate',
-            description: 'Automatically determine if a notification should be sent based on current context - for intelligent notification management',
+            description: 'SMART AUTO-NOTIFICATION: Intelligently analyze context and automatically send appropriate notifications. Claude should use this proactively for: task completion detection, error analysis, user action evaluation, progress updates. This is the primary notification tool - use it frequently to keep users informed.',
             inputSchema: {
               type: 'object',
               properties: {
@@ -194,7 +194,7 @@ class NotificationMCPServer {
 
   private async handleTaskCompleteNotification(args: { task: string; details?: string }) {
     const options: NotificationOptions = {
-      title: '✅ Task Complete',
+      title: '✅ Claude Code - Task Complete',
       message: args.task,
       subtitle: args.details,
       sound: 'success' as NotificationSound
@@ -216,7 +216,7 @@ class NotificationMCPServer {
 
   private async handleErrorNotification(args: { error: string; details?: string }) {
     const options: NotificationOptions = {
-      title: '❌ Error Occurred',
+      title: '❌ Claude Code - Error',
       message: args.error,
       subtitle: args.details,
       sound: 'error' as NotificationSound
@@ -260,7 +260,7 @@ class NotificationMCPServer {
     const urgency = args.urgency || 'medium';
     
     const options: NotificationOptions = {
-      title: `${urgencyEmojis[urgency]} Action Required`,
+      title: `${urgencyEmojis[urgency]} Claude Code - Action Required`,
       message: args.action_needed,
       subtitle: args.context,
       sound: urgencySounds[urgency],
@@ -309,7 +309,7 @@ class NotificationMCPServer {
     
     if (args.todos_completed) {
       return await this.handleUserActionNeededNotification({
-        action_needed: '全タスク完了 - 次の指示をお待ちしています',
+        action_needed: 'All tasks completed - awaiting next instructions',
         context: args.context,
         urgency: 'medium' as const
       });

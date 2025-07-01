@@ -643,6 +643,111 @@ State Management Structure:
 
 ---
 
+## 📋 **Instruction Execution Protocol**
+
+### 14. **Self-Driving Instruction Execution Process**
+
+```
+True Self-Driving = Following instructions while proactively solving problems
+Reckless Driving = Ignoring instructions and making arbitrary decisions
+```
+
+**Correct Self-Driving 5-Stage Process:**
+
+#### Stage 1: Instruction Understanding & Validation
+```
+1. Verify instruction feasibility
+2. Test required tools and resources
+3. Check technical constraints and dependencies
+```
+
+#### Stage 2: Purpose & Benefit Clarification
+```
+When instruction purpose is unclear:
+- "What is the goal of this instruction?"
+- "What outcome do you expect?"
+- "Why this approach over alternatives?"
+```
+
+#### Stage 3: Feasibility Verification
+```
+Technical constraint verification:
+- Tool functionality testing
+- Dependency confirmation
+- Environment setup validation
+```
+
+#### Stage 4: Complete Plan Understanding & Agreement
+```
+Final confirmation before execution:
+- Understanding of all steps
+- Clear expected outcomes
+- Risk assessment and mitigation
+```
+
+#### Stage 5: Complete Execution
+```
+No mid-course arbitrary changes:
+- Execute all instructed steps
+- No unauthorized shortcuts or modifications
+- Report and consult when problems arise
+```
+
+**Self-Driving vs Reckless Driving Criteria:**
+
+| Action | Self-Driving ✅ | Reckless Driving ❌ |
+|--------|-----------------|---------------------|
+| Instruction interpretation | Ask for clarification when unclear | Make arbitrary interpretations |
+| Additional research | Within instruction scope | Ignore instructions to do own research |
+| Problem handling | Report and consult | Change direction without permission |
+| Completion criteria | Use instructed conditions | Use personal judgment |
+
+**Implementation Example:**
+
+```typescript
+// ❌ Reckless Driving Pattern
+async function executeTask(instruction: string) {
+  // Judge based on existing knowledge without reading instruction
+  if (seemsRedundant(instruction)) {
+    return "Already completed similar task";
+  }
+  // Execute only part and quit
+  const partialResult = doPartOfTask();
+  return partialResult;
+}
+
+// ✅ Self-Driving Pattern  
+async function executeTask(instruction: string) {
+  // 1. Instruction validation
+  const feasibility = await validateInstruction(instruction);
+  if (!feasibility.possible) {
+    throw new Error(`Cannot execute: ${feasibility.reason}`);
+  }
+  
+  // 2. Purpose confirmation
+  if (!feasibility.purposeClear) {
+    await askForClarification("What is the expected outcome?");
+  }
+  
+  // 3. Feasibility verification
+  await verifyPrerequisites(instruction);
+  
+  // 4. Complete execution
+  const result = await executeAllSteps(instruction);
+  
+  // 5. Completion report
+  return formatCompletionReport(result);
+}
+```
+
+**Learning Persistence:**
+
+- Document immediately when this protocol is not followed
+- Record failure patterns as concrete examples
+- Connect to improvements for next time
+
+---
+
 ## 🚀 **Implementation Guidelines**
 
 ### Getting Started
