@@ -8,7 +8,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
-    "watch": "tsx watch src/index.ts"
+    "watch": "tsx watch src/index.ts",
+    "setup-hooks": "node scripts/setup-hooks.js",
+    "install-hooks": "npm run setup-hooks"
   },
   "keywords": [
     "mcp",

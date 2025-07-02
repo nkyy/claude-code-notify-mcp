@@ -1,65 +1,71 @@
-# 🔔 Claude Code Notification MCP Server
+# 🔔 Claude Code Notification Hooks
 
-A Model Context Protocol (MCP) server that enables Claude Code to send desktop notifications with contextual sounds for different types of events.
+Enhanced Claude Code experience with automatic desktop notifications and contextual sounds for all events. No manual notification calls needed - works automatically with all Claude Code operations!
 
 ## ✨ Features
 
-- 🔔 **Desktop Notifications**: Native notifications for macOS/Windows/Linux
+- 🔔 **Automatic Notifications**: Intercepts ALL Claude Code notifications and enhances them
 - 🎵 **Contextual Sounds**: Different sounds for success, error, warning, and other event types
-- 🚀 **Easy Setup**: One-command installation and configuration
-- 📋 **Pre-built Notification Types**: Common notification patterns for quick use
-- 🖱️ **Interactive**: Support for click actions and user interaction
+- 🚀 **Zero Configuration**: Automatic detection and enhancement of notification types
+- 📋 **Smart Sound Mapping**: Intelligent analysis of notification content for appropriate sounds
+- 🖱️ **Native System Integration**: Uses macOS/Windows/Linux native notification systems
 
 ## 🚀 Quick Start
 
-### 1. Installation
+### Method 1: One-Command Setup (Recommended)
 
+Run this in Claude Code:
+
+```bash
+cd /path/to/ccnotify && npm run setup-hooks
+```
+
+### Method 2: Manual Setup
+
+1. **Clone and build:**
 ```bash
 git clone <this-repository>
 cd ccnotify
 npm install && npm run build
 ```
 
-### 2. Configure Claude Code
-
-Add to your Claude Code settings file (`~/.config/claude-code/settings.json`):
-
-```json
-{
-  "mcpServers": {
-    "ccnotify": {
-      "command": "node",
-      "args": ["/path/to/ccnotify/dist/index.js"]
-    }
-  }
-}
+2. **Run setup:**
+```bash
+npm run setup-hooks
 ```
 
-### 3. Test It Out
+3. **Restart Claude Code** if it's currently running
 
-Ask Claude Code:
+### 3. That's It!
 
-```
-Send me a test notification
-```
+All Claude Code notifications will now automatically have enhanced sounds and styling. No additional configuration needed!
 
-If you see a notification, you're all set! 🎉
+## 📱 How It Works
 
-## 📱 Basic Usage
+The notification hook automatically detects and enhances all Claude Code notifications:
 
-### Task Completion Notifications
-```
-Notify me when the build finishes
-```
+### Automatic Sound Assignment
+- ✅ **Success/Completion** → Glass sound (macOS)
+- 🚨 **Errors/Failures** → Basso sound (macOS)  
+- ⚠️ **Warnings/Attention** → Sosumi sound (macOS)
+- 💡 **Info/Updates** → Blow sound (macOS)
+- ⏳ **Progress/Ongoing** → Tink sound (macOS)
 
-### Error Alerts
-```
-Alert me if there are any compilation errors
-```
+### Examples in Action
+```bash
+# Building a project
+npm run build
+# → Automatic success notification with Glass sound when complete
+# → Automatic error notification with Basso sound if failed
 
-### Progress Updates
-```
-Show progress notifications during package installation
+# Running tests  
+npm test
+# → Automatic progress notification with Tink sound while running
+# → Automatic completion notification when finished
+
+# Git operations
+git push origin main
+# → Automatic notifications for each step with appropriate sounds
 ```
 
 ## 🎵 Available Sounds
@@ -75,91 +81,66 @@ Show progress notifications during package installation
 | `default` | System default notification sound | - |
 | `silent` | No sound | - |
 
-## 🛠️ Advanced Usage
+## 🛠️ Advanced Configuration
 
-### Custom Notifications
+### Customizing Sound Mappings
 
-```typescript
-// Available tool in Claude Code
-send_notification({
-  title: "🔍 Code Analysis Complete",
-  message: "Found 3 potential improvements",
-  sound: "info",
-  subtitle: "Click to view recommendations",
-  open: "file:///path/to/report.html"
-})
+Edit the hook script at `hooks/notification-hook.js` to customize sound mappings:
+
+```javascript
+// Example: Add custom sound rules
+const customSoundRules = [
+  { pattern: /deployment/i, sound: 'Ping' },
+  { pattern: /security/i, sound: 'Funk' },
+  { pattern: /backup/i, sound: 'Purr' }
+];
 ```
 
-### Pre-built Notification Types
+### Troubleshooting
 
-```typescript
-// Task completion notification
-send_task_complete_notification({
-  task: "Refactoring completed successfully",
-  details: "Processed 15 files, fixed 23 issues"
-})
+**Hook not working?**
+```bash
+# Check if hook is properly installed
+cat ~/.config/claude-code/settings.json | grep -A 10 "hooks"
 
-// Error notification
-send_error_notification({
-  error: "TypeScript compilation failed",
-  details: "3 type errors found in user-service.ts"
-})
+# Verify hook script is executable
+ls -la hooks/notification-hook.js
 
-// Progress notification
-send_progress_notification({
-  status: "Installing dependencies (2/5)",
-  details: "Installing @types/node..."
-})
+# Re-run setup if needed
+npm run setup-hooks
+```
+
+**Sounds not playing?**
+```bash
+# Test system sound (macOS)
+afplay /System/Library/Sounds/Glass.aiff
+
+# Check notification permissions in System Preferences
 ```
 
 ## 🌍 Real-World Examples
 
-### Development Workflow
+### Automatic Enhancement Examples
 
-**Long-running Tasks**
-```
-"Running test suite... please notify when complete"
-→ ✅ "Tests Complete: All 127 tests passed"
-```
+**Claude Code Operations** → **Enhanced Notifications**
 
-**Error Monitoring**
-```
-"Let me know if the build fails"
-→ 🚨 "Build Error: Type definitions not found"
-```
+```bash
+# File operations
+"Create a new React component"
+→ ✅ "Component created successfully" + Glass sound
 
-**Progress Tracking**
-```
-"Show progress while downloading large files"
-→ 📊 "Download Progress: 67% (340MB/500MB)"
-```
+# Build processes  
+"Run the build process"
+→ ⏳ "Build in progress..." + Tink sound
+→ ✅ "Build completed successfully" + Glass sound
 
-### Custom Use Cases
+# Error scenarios
+"Fix the TypeScript errors"
+→ 🚨 "3 type errors found" + Basso sound
 
-**Meeting Reminders**
-```typescript
-send_notification({
-  title: "📅 Meeting in 5 minutes",
-  message: "Daily standup meeting starting soon",
-  sound: "reminder",
-  wait: true
-})
-```
-
-**Code Review Completion**
-```typescript
-send_task_complete_notification({
-  task: "Pull Request #123 reviewed",
-  details: "Approved - ready to merge"
-})
-```
-
-**CI/CD Pipeline Updates**
-```typescript
-send_progress_notification({
-  status: "Deployment in progress",
-  details: "Stage 2/4: Running integration tests"
-})
+# Git operations
+"Commit these changes"
+→ ✅ "Changes committed successfully" + Glass sound
 ```
 
 ## 🔧 Development
@@ -181,43 +162,44 @@ npm start      # Start production server
 - Automatic platform-specific implementation switching
 - Extensible notification type system
 
-## 📋 Available Tools
+## 📋 Technical Details
 
-### 1. `send_notification`
-Send a custom notification with full control over all parameters.
+### Hook Architecture
 
-**Parameters:**
-- `title` (required): Notification title
-- `message` (required): Notification message
-- `sound` (optional): Sound type - see Available Sounds
-- `subtitle` (optional): Additional subtitle text
-- `timeout` (optional): Timeout in seconds (1-60, macOS only)
-- `open` (optional): URL/file to open when clicked
-- `wait` (optional): Wait for user interaction
+The notification hook intercepts Claude Code's notification system and enhances it:
 
-### 2. `send_task_complete_notification`
-Quick notification for task completion with success sound.
+1. **Interception**: Hook receives all notification calls from Claude Code
+2. **Analysis**: Analyzes notification content using pattern matching
+3. **Enhancement**: Adds appropriate sounds and styling based on content
+4. **Native Integration**: Uses platform-specific notification APIs
 
-**Parameters:**
-- `task` (required): Description of completed task
-- `details` (optional): Additional completion details
+### Installation Structure
 
-### 3. `send_error_notification`
-Quick notification for errors with error sound.
+```
+~/.config/claude-code/settings.json  # Claude Code configuration
+hooks/notification-hook.js            # Main hook script  
+dist/index.js                        # Built MCP server (optional)
+scripts/setup-hooks.js               # Automated setup script
+```
 
-**Parameters:**
-- `error` (required): Error description
-- `details` (optional): Additional error details
+### Platform Support
+- **macOS**: Full native support with `osascript` and system sounds
+- **Windows/Linux**: Cross-platform support via `node-notifier` package
 
-### 4. `send_progress_notification`
-Quick notification for progress updates with progress sound.
+### Legacy MCP Server (Optional)
 
-**Parameters:**
-- `status` (required): Current progress status
-- `details` (optional): Additional progress details
+For advanced users who want manual notification control, the MCP server is still available:
 
-### 5. `list_notification_sounds`
-List all available sounds and their intended use cases.
+```json
+{
+  "mcpServers": {
+    "ccnotify": {
+      "command": "node",
+      "args": ["/absolute/path/to/ccnotify/dist/index.js"]
+    }
+  }
+}
+```
 
 ## 🤝 Contributing
 

@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /Users/nkygit/vscode-work/ccnotify/hooks/notification-hook.js"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /Users/nkygit/vscode-work/ccnotify/hooks/stop-hook.js"
+          }
+        ]
+      }
+    ]
+  }
+}

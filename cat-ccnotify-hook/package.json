@@ -1,6 +1,6 @@
 {
   "name": "cat-ccnotify-hook",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Enhanced Claude Code notification hooks with cat sounds and better styling",
   "main": "index.js",
   "type": "module",
