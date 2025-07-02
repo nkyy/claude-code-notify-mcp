@@ -1,5 +1,7 @@
 # 🔔 Claude Code Notification Hooks
 
+> **⚠️ DEPRECATED**: This project has been superseded by [cat-ccnotify-hook](https://github.com/nkygit/cat-ccnotify-hook). Please use the new standalone package for better performance and easier installation.
+
 Enhanced Claude Code experience with automatic desktop notifications and contextual sounds for all events. No manual notification calls needed - works automatically with all Claude Code operations!
 
 ## ✨ Features
